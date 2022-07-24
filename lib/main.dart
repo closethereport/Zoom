@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test/resources/auth_methods.dart';
 import 'package:test/screens/home_screen.dart';
 import 'package:test/screens/login_screen.dart';
 import 'package:test/utils/colors.dart';
@@ -24,7 +25,21 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
       },
-      home: const LoginScreen(),
+      home: StreamBuilder(
+        stream: AuthMethods().authChanges,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (snapshot.hasData) {
+            return const HomeScreen();
+          }
+          return LoginScreen();
+        },
+      ),
     );
   }
 }
